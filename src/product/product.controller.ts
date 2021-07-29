@@ -46,6 +46,14 @@ export class ProductController {
             }
         }
 
-        return this.productService.find(find, options);
+        const data = await this.productService.find(find, options);
+        const total = await this.productService.count(find);
+
+        return {
+            data, 
+            total,
+            page: Number(page),
+            lastPage: Math.ceil(total / Number(limit))
+        }
     }
 }

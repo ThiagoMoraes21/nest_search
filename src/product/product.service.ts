@@ -17,4 +17,8 @@ export class ProductService {
             .exec();
     }
 
+    count(options): Promise<number> {
+        return this.productModel.count(options).exec();
+    }
+
 }
