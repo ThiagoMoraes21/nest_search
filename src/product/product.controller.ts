@@ -7,12 +7,18 @@ export class ProductController {
 
     constructor(private readonly productService: ProductService) { }
 
-    @Get('frontend')
-    async findAll() {
-        return this.productService.find();
+    @Get()
+    async findAll(@Req() req: Request) {
+        const { sort } = req.query;
+        const options = {
+            sort: {
+                price: sort
+            }
+        }
+        return this.productService.find(null, options);
     }
 
-    @Get('backend')
+    @Get('filter')
     async search(@Req() req: Request) {
         const { search, sort } = req.query;
         let options = {};
@@ -26,13 +32,10 @@ export class ProductController {
         }
 
         if (sort) {
-            options['$sort'] = {
+            options['sort'] = {
                 price: sort
             }
         }
-
-        console.log(find);
-        console.log(options);
 
         return this.productService.find(find, options);
     }
