@@ -1,6 +1,6 @@
 import { ProductService } from './product.service';
 import { Controller, Get, Req } from '@nestjs/common';
-import { Request } from 'express';
+import { query, Request } from 'express';
 
 @Controller('products')
 export class ProductController {
@@ -20,9 +20,18 @@ export class ProductController {
 
     @Get('filter')
     async search(@Req() req: Request) {
-        const { search, sort } = req.query;
-        let options = {};
+        const {
+            search,
+            sort,
+            page = 1,
+            limit = 9
+        } = req.query;
+
         let find = {}
+        let options = {
+            skip: (Number(page) - 1) * Number(limit),
+            limit: Number(limit)
+        };
 
         if (search) {
             find['$or'] = [
