@@ -1,6 +1,7 @@
 import { ProductService } from './product.service';
 import { Controller, Get, Req } from '@nestjs/common';
-import { query, Request } from 'express';
+import { Request } from 'express';
+import { ProductSearchOptions, ProductSortOptions } from './interfaces/product.interface';
 
 @Controller('products')
 export class ProductController {
@@ -10,44 +11,27 @@ export class ProductController {
     @Get()
     async findAll(@Req() req: Request) {
         const { sort } = req.query;
-        const options = {
-            sort: {
-                price: sort
-            }
-        }
-        return this.productService.find(null, options);
+        let options: ProductSearchOptions = {};
+        if(sort) options['sort'] = sort as ProductSortOptions;
+        return this.productService.findAll(options);
     }
 
     @Get('filter')
     async search(@Req() req: Request) {
-        const {
-            search,
-            sort,
-            page = 1,
-            limit = 9
-        } = req.query;
-
-        let find = {}
-        let options = {
-            skip: (Number(page) - 1) * Number(limit),
-            limit: Number(limit)
-        };
-
-        if (search) {
-            find['$or'] = [
-                { title: new RegExp(search.toString(), 'i') },
-                { description: new RegExp(search.toString(), 'i') },
-            ]
+        const { search = '', sort, page = 1, limit = 9 } = req.query;
+        
+        const options: ProductSearchOptions = {
+            sort: sort as ProductSortOptions,
+            limit: Number(limit),
+            page: Number(page)
         }
 
-        if (sort) {
-            options['sort'] = {
-                price: sort
-            }
-        }
+        const data = await this.productService.find(
+            search as string,
+            options
+        );
 
-        const data = await this.productService.find(find, options);
-        const total = await this.productService.count(find);
+        const total = await this.productService.count(search);
 
         return {
             data, 

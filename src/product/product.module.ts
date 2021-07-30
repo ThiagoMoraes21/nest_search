@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { Product, ProductSchema } from './entities/product.entity';
+import { ProductRepository } from './repositories/product.repository';
 
 @Module({
     imports: [
@@ -11,6 +12,9 @@ import { Product, ProductSchema } from './entities/product.entity';
         ]),
     ],
     controllers: [ProductController],
-    providers: [ProductService]
+    providers: [
+        ProductService,
+        ProductRepository
+    ]
 })
 export class ProductModule { }

@@ -1,24 +1,27 @@
-import { Product, ProductDocument } from './entities/product.entity';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-
-type Query = Record<string, unknown>;
+import { Product } from './entities/product.entity';
+import { ProductQuery, ProductSearchOptions } from './interfaces/product.interface';
+import { ProductRepository } from './repositories/product.repository';
 
 @Injectable()
 export class ProductService {
     constructor(
-        @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>
+        private productRepository: ProductRepository
     ) { }
 
-    async find(fields: Query = {}, options?: Query): Promise<ProductDocument[]> {
-        return this.productModel
-            .find(fields, null, options)
-            .exec();
+    public async find(
+        fields: ProductQuery,
+        options?: ProductSearchOptions):
+        Promise<Product[]> {
+        return this.productRepository.find(fields, options);
     }
 
-    count(options): Promise<number> {
-        return this.productModel.count(options).exec();
+    public async findAll(options: ProductSearchOptions): Promise<Product[]> {
+        return this.productRepository.findAll(options);
+    }
+
+    public count(query: ProductQuery): Promise<number> {
+        return this.productRepository.count(query);
     }
 
 }
