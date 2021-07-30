@@ -19,7 +19,7 @@ export class Product {
     @Prop()
     image: string;
 
-    @Factory(faker => randomInt(10, 1000))
+    @Factory(() => Math.floor(Math.random() * 1000) + 1)
     @Prop()
     price: number;
 }
